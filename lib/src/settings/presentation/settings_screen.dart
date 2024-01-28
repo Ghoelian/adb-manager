@@ -1,41 +1,86 @@
+import 'package:adb_manager/common/models/settings_model.dart';
+import 'package:adb_manager/src/settings/presentation/edit_setting_dialogue.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  Widget build(BuildContext context) {
+    return Consumer<SettingsModel>(
+      builder: (context, settingsModel, child) {
+        final settings = settingsModel.getSettings();
+
+        return SettingsList(settings: settings);
+      },
+    );
+  }
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class SettingsList extends StatelessWidget {
+  final List<Setting> settings;
+
+  const SettingsList({super.key, required this.settings});
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      // TODO: temporary, should make a central settings store and dynamically create these tiles at some point
-      children: const [
-        Tooltip(
-          message: "Repository where scripts will be pulled from.",
-          child: ListTile(
-            title: Text("Script repository"),
-            subtitle:
-                Text("https://github.com/Ghoelian/adb-manager-scripts.git"),
-          ),
-        ),
-        Tooltip(
-          message: "How often the program scans for new devices.",
-          child: ListTile(
-            title: Text("Scan interval"),
-            subtitle: Text("10 seconds"),
-          ),
-        ),
-        Tooltip(
-          message:
-              "If a device gets disconnected and re-connected within this time, scripts will not be re-run.",
-          child: ListTile(
-              title: Text("Script re-run timeout"),
-              subtitle: Text("10 seconds")),
-        )
-      ],
+    return ListView.builder(
+      itemCount: settings.length,
+      itemBuilder: (BuildContext context, int index) {
+        final setting = settings[index];
+
+        return SettingTile(setting: setting);
+      },
+    );
+  }
+}
+
+class SettingTile extends StatefulWidget {
+  final Setting setting;
+
+  const SettingTile({super.key, required this.setting});
+
+  @override
+  State<SettingTile> createState() => _SettingTileState();
+}
+
+class _SettingTileState extends State<SettingTile> {
+  Future<void> _showEditDialogue(Setting setting) async {
+    final settingsModel = Provider.of<SettingsModel>(context, listen: false);
+
+    final newValue = await showDialog<String?>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return EditSettingDialogue(setting: setting);
+        });
+
+    if (newValue == null) return;
+
+    settingsModel.updateSetting(setting.key, newValue);
+  }
+
+  void _restoreDefaultValue(Setting setting) {
+    final settingsModel = Provider.of<SettingsModel>(context, listen: false);
+
+    settingsModel.updateSetting(setting.key, null);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      onTap: () => _showEditDialogue(widget.setting),
+      title: Text(widget.setting.key),
+      subtitle: Text(widget.setting.getValue().toString()),
+      trailing: widget.setting.value != null
+          ? Tooltip(
+              message: "Restore default value",
+              child: IconButton(
+                  onPressed: () => _restoreDefaultValue(widget.setting),
+                  icon: const Icon(Icons.settings_backup_restore)),
+            )
+          : null,
     );
   }
 }
