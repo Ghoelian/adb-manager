@@ -1,7 +1,6 @@
-import 'dart:io';
-
+import 'package:adb_manager/common/models/adb_model.dart';
 import 'package:flutter/material.dart';
-import 'package:process_run/process_run.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,26 +14,27 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
-    getDevices();
-  }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final adbModel = Provider.of<AdbModel>(context, listen: false);
 
-  Future<void> getDevices() async {
-    final shell = Shell();
-
-    List<ProcessResult>? cmdOutput;
-
-    // Hope including adb like this won't cause any issues
-    if (Platform.isLinux) {
-      cmdOutput = await shell.run('./include/adb devices');
-    } else if (Platform.isWindows) {
-      cmdOutput = await shell.run('./include/adb.exe devices');
-    }
-
-    print(cmdOutput?.outText);
+      adbModel.getDevices();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Consumer<AdbModel>(
+      builder: (context, adb, child) => ListView.builder(
+        itemCount: adb.devices.length,
+        itemBuilder: (BuildContext context, int index) {
+          final device = adb.devices[index];
+
+          return ListTile(
+            title: Text(device.serialNumber),
+            subtitle: Text(device.status),
+          );
+        },
+      ),
+    );
   }
 }
