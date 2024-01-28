@@ -1,5 +1,7 @@
+import 'package:adb_manager/common/models/adb_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class AdbManagerNavRail extends StatefulWidget {
   final GoRouterState state;
@@ -37,6 +39,7 @@ class _AdbManagerNavRailState extends State<AdbManagerNavRail> {
   Widget build(BuildContext context) {
     return NavigationRail(
         labelType: NavigationRailLabelType.selected,
+        trailing: const ReloadButton(),
         onDestinationSelected: onDestinationSelected,
         destinations: const [
           NavigationRailDestination(
@@ -53,5 +56,24 @@ class _AdbManagerNavRailState extends State<AdbManagerNavRail> {
               label: Text('Settings'))
         ],
         selectedIndex: _selectedIndex);
+  }
+}
+
+class ReloadButton extends StatelessWidget {
+  const ReloadButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AdbModel>(
+      builder: (context, adb, child) => Tooltip(
+        message: "Refresh devices",
+        child: IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: () {
+            adb.getDevices();
+          },
+        ),
+      ),
+    );
   }
 }
