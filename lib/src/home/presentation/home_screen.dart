@@ -22,7 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        setState(() {});
+        final adb = Provider.of<AdbModel>(context, listen: false);
+        final settingsModel =
+            Provider.of<SettingsModel>(context, listen: false);
+
+        adb.getDevices(
+            settingsModel.getSetting(SettingKeys.rerunTimeout).getValue());
       });
     });
   }
