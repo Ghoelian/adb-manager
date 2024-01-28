@@ -94,10 +94,17 @@ class AdbModel extends ChangeNotifier {
   Future<void> getDeviceModel(Device device) async {
     final shell = Shell();
 
-    final outLines = await shell.run(
-        "adb -s \"${device.serialNumber}\" shell getprop ro.product.model");
+    List<ProcessResult>? cmdOutput;
 
-    device.model = outLines.outText;
+    if (Platform.isLinux) {
+      cmdOutput = await shell.run(
+          "./include/adb -s \"${device.serialNumber}\" shell getprop ro.product.model");
+    } else if (Platform.isWindows) {
+      cmdOutput = await shell.run(
+          "./include/adb.exe -s \"${device.serialNumber}\" shell getprop ro.product.model");
+    }
+
+    device.model = cmdOutput?.outText;
 
     notifyListeners();
   }
