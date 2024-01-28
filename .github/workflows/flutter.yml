@@ -31,12 +31,12 @@ jobs:
       - run: flutter pub get
       - run: flutter build linux --release
 
-      - run: "cd ./build/linux/x64/release/"
-      - run: "pwd"
-      - run: "ls -la"
-      - run: mv bundle adb-manager
-      - run: "tar -czf ./linux-x64.tar.gz ./adb-manager"
-      - run: "cd ../../../.."
+      - run: |
+          "cd ./build/linux/x64/release/"
+          pwd
+          ls -la
+          mv bundle adb-manager
+          "tar -czf ./linux-x64.tar.gz ./adb-manager"
 
       - uses: ncipollo/release-action@v1
         with:
