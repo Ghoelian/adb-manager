@@ -27,7 +27,8 @@ class AdbManager extends StatelessWidget {
               path: "/settings",
               builder: (context, state) => const SettingsScreen()),
         ],
-        builder: (context, state, child) => AdbManagerScaffold(state: state, child: child))
+        builder: (context, state, child) =>
+            AdbManagerScaffold(state: state, child: child))
   ]);
 
   @override
