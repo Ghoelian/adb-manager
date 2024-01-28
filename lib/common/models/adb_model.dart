@@ -12,8 +12,9 @@ enum DeviceStatus { noPermissions, connected, unknown, disconnected }
 class ScriptLog {
   final Script script;
   final String log;
+  final DateTime date;
 
-  ScriptLog({required this.script, required this.log});
+  ScriptLog({required this.script, required this.log, required this.date});
 }
 
 class Device {
@@ -109,7 +110,8 @@ class AdbModel extends ChangeNotifier {
           .cd("./include/scripts")
           .run("${script.path} ${device.serialNumber}");
 
-      device.scriptLog.add(ScriptLog(script: script, log: outLines.outText));
+      device.scriptLog.add(ScriptLog(
+          script: script, log: outLines.outText, date: DateTime.now()));
     }
   }
 

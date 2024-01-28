@@ -1,5 +1,6 @@
 import 'package:adb_manager/src/home/presentation/view_log_dialogue.dart';
 import 'package:flutter/material.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../common/models/adb_model.dart';
@@ -36,7 +37,7 @@ class _DeviceLogDialogueState extends State<DeviceLogDialogue> {
                 return ListTile(
                   onTap: () => _viewLog(log.log),
                   title: Text(log.script.name),
-                  subtitle: Text(log.log),
+                  subtitle: Text(GetTimeAgo.parse(log.date)),
                 );
               }),
         ),
