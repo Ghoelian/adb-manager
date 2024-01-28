@@ -23,6 +23,10 @@ class AdbModel extends ChangeNotifier {
 
   List<Device> devices = List.empty(growable: true);
 
+  AdbModel() {
+    getDevices(0);
+  }
+
   void runTask(String label, String task) {
     if (status != AdbStatus.idle) {
       throw DeviceBusyException("Busy running other task: $currentTask");
