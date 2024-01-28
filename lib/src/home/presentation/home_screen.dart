@@ -47,6 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: EdgeInsets.all(6),
           child: ButtonRow(),
         ),
+        Divider(
+          height: 1,
+          thickness: 1,
+        ),
         Expanded(
           child: DeviceList(),
         )
