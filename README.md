@@ -9,3 +9,4 @@
 - [ ] run script on device connect
 - [ ] enable/disable scripts
 - [ ] confirm user is fine with running a massively exploitable thing
+- [ ] test on windows
