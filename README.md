@@ -1,16 +1,11 @@
 # adb_manager
 
-ADB manager
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Todo
+- [x] get and parse adb devices
+- [x] get scripts from github repo
+- [x] persist settings
+- [x] view script contents with syntax highlighting
+- [ ] actually use settings
+- [ ] run script on device connect
+- [ ] enable/disable scripts
+- [ ] confirm user is fine with running a massively exploitable thing
