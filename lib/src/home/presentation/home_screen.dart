@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:adb_manager/common/models/adb_model.dart';
+import 'package:adb_manager/common/models/scripts_model.dart';
 import 'package:adb_manager/common/models/settings_model.dart';
+import 'package:adb_manager/src/home/presentation/device_log_dialogue.dart';
 import 'package:flutter/material.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 import 'package:provider/provider.dart';
@@ -25,9 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
         final adb = Provider.of<AdbModel>(context, listen: false);
         final settingsModel =
             Provider.of<SettingsModel>(context, listen: false);
+        final scriptsModel = Provider.of<ScriptsModel>(context, listen: false);
 
         adb.getDevices(
-            settingsModel.getSetting(SettingKeys.rerunTimeout).getValue());
+            settingsModel.getSetting(SettingKeys.rerunTimeout).getValue(),
+            scriptsModel.scripts);
       });
     });
   }
@@ -86,12 +90,13 @@ class ReloadButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: "Reload devices",
-      child: Consumer<SettingsModel>(
-        builder: (context, settingsModel, child) => IconButton(
+      child: Consumer2<SettingsModel, ScriptsModel>(
+        builder: (context, settingsModel, scriptsModel, child) => IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: () {
             adb.getDevices(
-                settingsModel.getSetting(SettingKeys.rerunTimeout).getValue());
+                settingsModel.getSetting(SettingKeys.rerunTimeout).getValue(),
+                scriptsModel.scripts);
           },
         ),
       ),

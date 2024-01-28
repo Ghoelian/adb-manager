@@ -56,9 +56,7 @@ class _SettingTileState extends State<SettingTile> {
     final newValue = await showDialog<String?>(
         context: context,
         barrierDismissible: false,
-        builder: (context) {
-          return EditSettingDialogue(setting: setting);
-        });
+        builder: (context) => EditSettingDialogue(setting: setting));
 
     if (newValue == null) return;
 

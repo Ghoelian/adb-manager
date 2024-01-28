@@ -90,8 +90,31 @@ class AdbModel extends ChangeNotifier {
     return parsedStatus;
   }
 
+  Future<void> getDeviceModel(Device device) async {
+    final shell = Shell();
+
+    final outLines = await shell.run(
+        "adb -s \"${device.serialNumber}\" shell getprop ro.product.model");
+
+    device.model = outLines.outText;
+
+    notifyListeners();
+  }
+
+  Future<void> runScripts(List<Script> scripts, Device device) async {
+    final shell = Shell();
+
+    for (final script in scripts) {
+      final outLines = await shell
+          .cd("./include/scripts")
+          .run("${script.path} ${device.serialNumber}");
+
+      device.scriptLog.add(ScriptLog(script: script, log: outLines.outText));
+    }
+  }
+
   void _parseOutLine(String outLine, List<Device> oldDevices,
-      List<Device> newDevices, int rerunTimeout) {
+      List<Device> newDevices, int rerunTimeout, List<Script> scripts) {
     if (outLine == "") return;
 
     final [serial, status] = outLine.split("\t");
@@ -106,7 +129,11 @@ class AdbModel extends ChangeNotifier {
               rerunTimeout) {
         existingDevice.status = parsedStatus;
         existingDevice.connectedAt = DateTime.now();
-        // TODO: execute scripts
+
+        if (existingDevice.status == DeviceStatus.connected) {
+          getDeviceModel(existingDevice);
+          runScripts(scripts, existingDevice);
+        }
       }
 
       newDevices.add(existingDevice);
@@ -116,14 +143,20 @@ class AdbModel extends ChangeNotifier {
       return;
     }
 
-    newDevices.add(Device(
+    final newDevice = Device(
         serialNumber: serial,
         status: parsedStatus,
-        connectedAt: DateTime.now()));
-    // TODO: execute scripts
+        connectedAt: DateTime.now());
+
+    newDevices.add(newDevice);
+
+    if (newDevice.status == DeviceStatus.connected) {
+      getDeviceModel(newDevice);
+      runScripts(scripts, newDevice);
+    }
   }
 
-  Future<void> getDevices(int rerunTimeout) async {
+  Future<void> getDevices(int rerunTimeout, List<Script> scripts) async {
     final oldDevices = [...devices];
 
     List<Device> newDevices = List.empty(growable: true);
@@ -145,7 +178,7 @@ class AdbModel extends ChangeNotifier {
     }
 
     cmdOutput?.outLines.skip(1).forEach((outLine) {
-      _parseOutLine(outLine, oldDevices, newDevices, rerunTimeout);
+      _parseOutLine(outLine, oldDevices, newDevices, rerunTimeout, scripts);
     });
 
     for (final device in oldDevices) {
