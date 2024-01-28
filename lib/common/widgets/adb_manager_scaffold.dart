@@ -1,3 +1,4 @@
+import 'package:adb_manager/common/models/settings_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -30,8 +31,11 @@ class AdbManagerScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChangeNotifierProvider(
-        create: (context) => AdbModel(),
+      body: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => AdbModel()),
+          ChangeNotifierProvider(create: (context) => SettingsModel())
+        ],
         child: MainRow(
           state: state,
           child: child,
@@ -97,7 +101,8 @@ class StatusItem extends StatelessWidget {
         text: TextSpan(
           children: [
             if (adb.currentTask != null)
-              TextSpan(text: "${statusTextMap[adb.status]!}: ${adb.currentTask} ")
+              TextSpan(
+                  text: "${statusTextMap[adb.status]!}: ${adb.currentTask} ")
             else
               TextSpan(text: "${statusTextMap[adb.status]!} "),
             WidgetSpan(
