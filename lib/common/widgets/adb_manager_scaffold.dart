@@ -96,7 +96,10 @@ class StatusItem extends StatelessWidget {
       builder: (context, adb, child) => RichText(
         text: TextSpan(
           children: [
-            TextSpan(text: "${statusTextMap[adb.status]!} "),
+            if (adb.currentTask != null)
+              TextSpan(text: "${statusTextMap[adb.status]!}: ${adb.currentTask} ")
+            else
+              TextSpan(text: "${statusTextMap[adb.status]!} "),
             WidgetSpan(
               child: Icon(
                 Icons.circle,
