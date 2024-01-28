@@ -122,4 +122,17 @@ class SettingsModel extends ChangeNotifier {
   List<Setting> getSettings() {
     return [scriptRepository, reloadInterval, rerunTimeout];
   }
+
+  Setting getSetting(String key) {
+    switch (key) {
+      case "script_repository":
+        return scriptRepository;
+      case "reload_interval_millis":
+        return reloadInterval;
+      case "reconnect_timeout":
+        return rerunTimeout;
+      default:
+        throw UnsupportedError("Unknown setting");
+    }
+  }
 }
