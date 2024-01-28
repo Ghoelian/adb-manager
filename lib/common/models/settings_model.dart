@@ -1,6 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+abstract class SettingKeys {
+  static const String scriptRepository = "script_repository";
+  static const String reloadInterval = "reload_interval_millis";
+  static const String rerunTimeout = "reconnect_timeout";
+}
+
 class Setting {
   final String key;
   final dynamic defaultValue;
@@ -15,12 +21,12 @@ class Setting {
 
 class SettingsModel extends ChangeNotifier {
   final scriptRepository = Setting(
-      key: "script_repository",
+      key: SettingKeys.scriptRepository,
       defaultValue: "https://github.com/Ghoelian/adb-manager-scripts.git");
   final reloadInterval =
-      Setting(key: "reload_interval_millis", defaultValue: 5 * 1000);
+      Setting(key: SettingKeys.reloadInterval, defaultValue: 5 * 1000);
   final rerunTimeout =
-      Setting(key: "reconnect_timeout", defaultValue: 10 * 1000);
+      Setting(key: SettingKeys.rerunTimeout, defaultValue: 10 * 1000);
 
   bool loading = true;
 
@@ -34,9 +40,9 @@ class SettingsModel extends ChangeNotifier {
 
     final prefs = await SharedPreferences.getInstance();
 
-    final repoValue = prefs.getString("script_repository");
-    final reloadValue = prefs.getInt("reload_interval_millis");
-    final rerunValue = prefs.getInt("reconnect_timeout");
+    final repoValue = prefs.getString(SettingKeys.scriptRepository);
+    final reloadValue = prefs.getInt(SettingKeys.reloadInterval);
+    final rerunValue = prefs.getInt(SettingKeys.rerunTimeout);
 
     if (repoValue != null) {
       scriptRepository.value = repoValue;
@@ -59,12 +65,12 @@ class SettingsModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
 
     switch (key) {
-      case "script_repository":
+      case SettingKeys.scriptRepository:
         if (value == null) {
           scriptRepository.value = null;
           notifyListeners();
 
-          await prefs.remove("script_repository");
+          await prefs.remove(SettingKeys.scriptRepository);
           return;
         }
 
@@ -73,15 +79,16 @@ class SettingsModel extends ChangeNotifier {
         if (parsedValue == null) return;
 
         scriptRepository.value = parsedValue;
-        await prefs.setString("script_repository", parsedValue.toString());
+        await prefs.setString(
+            SettingKeys.scriptRepository, parsedValue.toString());
 
         break;
-      case "reload_interval_millis":
+      case SettingKeys.reloadInterval:
         if (value == null) {
           reloadInterval.value = null;
           notifyListeners();
 
-          await prefs.remove("reload_interval_millis");
+          await prefs.remove(SettingKeys.reloadInterval);
           return;
         }
 
@@ -91,15 +98,15 @@ class SettingsModel extends ChangeNotifier {
         if (parsedValue == null) return;
 
         reloadInterval.value = parsedValue;
-        await prefs.setInt("reload_interval_millis", parsedValue);
+        await prefs.setInt(SettingKeys.reloadInterval, parsedValue);
 
         break;
-      case "reconnect_timeout":
+      case SettingKeys.rerunTimeout:
         if (value == null) {
           rerunTimeout.value = null;
           notifyListeners();
 
-          await prefs.remove("reconnect_timeout");
+          await prefs.remove(SettingKeys.rerunTimeout);
           return;
         }
 
@@ -109,7 +116,7 @@ class SettingsModel extends ChangeNotifier {
         if (parsedValue == null) return;
 
         rerunTimeout.value = parsedValue;
-        await prefs.setInt("reconnect_timeout", parsedValue);
+        await prefs.setInt(SettingKeys.rerunTimeout, parsedValue);
 
         break;
       default:
@@ -125,11 +132,11 @@ class SettingsModel extends ChangeNotifier {
 
   Setting getSetting(String key) {
     switch (key) {
-      case "script_repository":
+      case SettingKeys.scriptRepository:
         return scriptRepository;
-      case "reload_interval_millis":
+      case SettingKeys.reloadInterval:
         return reloadInterval;
-      case "reconnect_timeout":
+      case SettingKeys.rerunTimeout:
         return rerunTimeout;
       default:
         throw UnsupportedError("Unknown setting");
