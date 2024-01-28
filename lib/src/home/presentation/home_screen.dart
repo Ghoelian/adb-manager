@@ -118,8 +118,20 @@ class ClearDisconnectedButton extends StatelessWidget {
   }
 }
 
-class DeviceList extends StatelessWidget {
+class DeviceList extends StatefulWidget {
   const DeviceList({super.key});
+
+  @override
+  State<DeviceList> createState() => _DeviceListState();
+}
+
+class _DeviceListState extends State<DeviceList> {
+  Future<void> _showDeviceLog(Device device) async {
+    return await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => DeviceLogDialogue(device: device));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,11 +140,14 @@ class DeviceList extends StatelessWidget {
         itemCount: adb.devices.length,
         itemBuilder: (BuildContext context, int index) {
           final device = adb.devices[index];
+          final lastOutput = device.scriptLog.lastOrNull;
 
           return ListTile(
-            title: Text(device.serialNumber),
-            subtitle: Text(
-                "${device.status} – ${GetTimeAgo.parse(device.connectedAt)}"),
+            onTap: () => _showDeviceLog(device),
+            title: Text(device.model ?? device.serialNumber),
+            subtitle: Text(lastOutput != null
+                ? "${device.statusToString()} – ${GetTimeAgo.parse(device.connectedAt)} – last result: ${lastOutput.log}"
+                : "${device.statusToString()} – ${GetTimeAgo.parse(device.connectedAt)}"),
           );
         },
       ),
