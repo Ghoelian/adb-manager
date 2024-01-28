@@ -39,7 +39,7 @@ class _AdbManagerNavRailState extends State<AdbManagerNavRail> {
   @override
   Widget build(BuildContext context) {
     return NavigationRail(
-        labelType: NavigationRailLabelType.selected,
+        labelType: NavigationRailLabelType.all,
         onDestinationSelected: onDestinationSelected,
         destinations: const [
           NavigationRailDestination(
@@ -51,8 +51,8 @@ class _AdbManagerNavRailState extends State<AdbManagerNavRail> {
               selectedIcon: Icon(Icons.description),
               label: Text('Scripts')),
           NavigationRailDestination(
-              icon: Icon(Icons.settings_applications_outlined),
-              selectedIcon: Icon(Icons.settings_applications),
+              icon: Icon(Icons.settings_outlined),
+              selectedIcon: Icon(Icons.settings),
               label: Text('Settings'))
         ],
         selectedIndex: _selectedIndex);
