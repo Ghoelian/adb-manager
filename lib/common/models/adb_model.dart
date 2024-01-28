@@ -27,7 +27,21 @@ class Device {
   Device(
       {required this.serialNumber,
       required this.status,
-      required this.connectedAt});
+      required this.connectedAt,
+      this.model});
+
+  String statusToString() {
+    switch (status) {
+      case DeviceStatus.connected:
+        return 'Connected';
+      case DeviceStatus.disconnected:
+        return 'Disconnected';
+      case DeviceStatus.noPermissions:
+        return 'ADB not allowed';
+      case DeviceStatus.unknown:
+        return 'Unknown';
+    }
+  }
 }
 
 class AdbModel extends ChangeNotifier {
