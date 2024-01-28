@@ -180,6 +180,9 @@ class AdbModel extends ChangeNotifier {
     List<ProcessResult>? cmdOutput;
 
     // Hope including adb like this won't cause any issues
+    // also have not yet bothered to check how these relative paths work when invoking the program from somewhere else,
+    //   or where the default working dir is
+    // This might well break any second
     if (Platform.isLinux) {
       cmdOutput = await shell.run('./include/adb devices');
     } else if (Platform.isWindows) {
