@@ -1,4 +1,5 @@
 import 'package:adb_manager/common/models/adb_model.dart';
+import 'package:adb_manager/common/models/settings_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -64,13 +65,13 @@ class ReloadButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AdbModel>(
-      builder: (context, adb, child) => Tooltip(
+    return Consumer2<AdbModel, SettingsModel>(
+      builder: (context, adb, settingsModel, child) => Tooltip(
         message: "Refresh devices",
         child: IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: () {
-            adb.getDevices();
+            adb.getDevices(settingsModel.getSetting("reconnect_timeout").getValue());
           },
         ),
       ),

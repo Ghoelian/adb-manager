@@ -8,9 +8,13 @@ enum AdbStatus { idle, runningTask, loading, errorred }
 
 class Device {
   final String serialNumber;
-  String status;
+  DateTime connectedAt;
+  DeviceStatus status;
 
-  Device({required this.serialNumber, required this.status});
+  Device(
+      {required this.serialNumber,
+      required this.status,
+      required this.connectedAt});
 }
 
 class AdbModel extends ChangeNotifier {
@@ -30,7 +34,7 @@ class AdbModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getDevices() async {
+  Future<void> getDevices(int rerunTimeout) async {
     status = AdbStatus.runningTask;
     currentTask = "getting devices";
 
@@ -47,14 +51,48 @@ class AdbModel extends ChangeNotifier {
       cmdOutput = await shell.run('./include/adb.exe devices');
     }
 
-    devices = List.empty(growable: true);
-
     cmdOutput?.outLines.skip(1).forEach((outLine) {
       if (outLine == "") return;
 
       final [serial, status] = outLine.split("\t");
 
-      devices.add(Device(serialNumber: serial, status: status));
+      DeviceStatus parsedStatus;
+
+      if (status.startsWith("no permissions;")) {
+        parsedStatus = DeviceStatus.noPermissions;
+      } else if (status == "device") {
+        parsedStatus = DeviceStatus.connected;
+      } else {
+        parsedStatus = DeviceStatus.unknown;
+      }
+
+      Device? existingDevice;
+
+      for (final device in devices) {
+        if (device.serialNumber == serial) {
+          existingDevice = device;
+
+          break;
+        }
+      }
+
+      if (existingDevice != null) {
+        if (existingDevice.status != parsedStatus &&
+            DateTime.now()
+                    .difference(existingDevice.connectedAt)
+                    .inMilliseconds >
+                rerunTimeout) {
+          existingDevice.connectedAt = DateTime.now();
+          // TODO: execute scripts
+        }
+        return;
+      }
+
+      devices.add(Device(
+          serialNumber: serial,
+          status: parsedStatus,
+          connectedAt: DateTime.now()));
+      // TODO: execute scripts
     });
 
     status = AdbStatus.idle;
