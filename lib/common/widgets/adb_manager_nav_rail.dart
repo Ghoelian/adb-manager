@@ -40,7 +40,6 @@ class _AdbManagerNavRailState extends State<AdbManagerNavRail> {
   Widget build(BuildContext context) {
     return NavigationRail(
         labelType: NavigationRailLabelType.selected,
-        trailing: const ReloadButton(),
         onDestinationSelected: onDestinationSelected,
         destinations: const [
           NavigationRailDestination(
@@ -57,24 +56,5 @@ class _AdbManagerNavRailState extends State<AdbManagerNavRail> {
               label: Text('Settings'))
         ],
         selectedIndex: _selectedIndex);
-  }
-}
-
-class ReloadButton extends StatelessWidget {
-  const ReloadButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer2<AdbModel, SettingsModel>(
-      builder: (context, adb, settingsModel, child) => Tooltip(
-        message: "Refresh devices",
-        child: IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: () {
-            adb.getDevices(settingsModel.getSetting("reconnect_timeout").getValue());
-          },
-        ),
-      ),
-    );
   }
 }
