@@ -6,7 +6,7 @@ import 'package:process_run/process_run.dart';
 
 enum AdbStatus { idle, runningTask, loading, errorred }
 
-enum DeviceStatus { noPermissions, connected, unknown }
+enum DeviceStatus { noPermissions, connected, unknown, disconnected }
 
 class Device {
   final String serialNumber;
@@ -40,7 +40,73 @@ class AdbModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Device? _findExistingDevice(String serial, List<Device> oldDevices) {
+    Device? existingDevice;
+
+    for (final device in oldDevices) {
+      if (device.serialNumber == serial) {
+        existingDevice = device;
+        oldDevices.remove(device);
+
+        break;
+      }
+    }
+
+    return existingDevice;
+  }
+
+  DeviceStatus parseStatus(String status) {
+    DeviceStatus parsedStatus;
+
+    if (status.startsWith("no permissions;")) {
+      parsedStatus = DeviceStatus.noPermissions;
+    } else if (status == "device") {
+      parsedStatus = DeviceStatus.connected;
+    } else {
+      parsedStatus = DeviceStatus.unknown;
+    }
+
+    return parsedStatus;
+  }
+
+  void _parseOutLine(String outLine, List<Device> oldDevices,
+      List<Device> newDevices, int rerunTimeout) {
+    if (outLine == "") return;
+
+    final [serial, status] = outLine.split("\t");
+
+    final existingDevice = _findExistingDevice(serial, oldDevices);
+
+    DeviceStatus parsedStatus = parseStatus(status);
+
+    if (existingDevice != null) {
+      if (existingDevice.status != parsedStatus &&
+          DateTime.now().difference(existingDevice.connectedAt).inMilliseconds >
+              rerunTimeout) {
+        existingDevice.status = parsedStatus;
+        existingDevice.connectedAt = DateTime.now();
+        // TODO: execute scripts
+      }
+
+      newDevices.add(existingDevice);
+
+      notifyListeners();
+
+      return;
+    }
+
+    newDevices.add(Device(
+        serialNumber: serial,
+        status: parsedStatus,
+        connectedAt: DateTime.now()));
+    // TODO: execute scripts
+  }
+
   Future<void> getDevices(int rerunTimeout) async {
+    final oldDevices = [...devices];
+
+    List<Device> newDevices = List.empty(growable: true);
+
     status = AdbStatus.runningTask;
     currentTask = "getting devices";
 
@@ -58,51 +124,24 @@ class AdbModel extends ChangeNotifier {
     }
 
     cmdOutput?.outLines.skip(1).forEach((outLine) {
-      if (outLine == "") return;
-
-      final [serial, status] = outLine.split("\t");
-
-      DeviceStatus parsedStatus;
-
-      if (status.startsWith("no permissions;")) {
-        parsedStatus = DeviceStatus.noPermissions;
-      } else if (status == "device") {
-        parsedStatus = DeviceStatus.connected;
-      } else {
-        parsedStatus = DeviceStatus.unknown;
-      }
-
-      Device? existingDevice;
-
-      for (final device in devices) {
-        if (device.serialNumber == serial) {
-          existingDevice = device;
-
-          break;
-        }
-      }
-
-      if (existingDevice != null) {
-        if (existingDevice.status != parsedStatus &&
-            DateTime.now()
-                    .difference(existingDevice.connectedAt)
-                    .inMilliseconds >
-                rerunTimeout) {
-          existingDevice.connectedAt = DateTime.now();
-          // TODO: execute scripts
-        }
-        return;
-      }
-
-      devices.add(Device(
-          serialNumber: serial,
-          status: parsedStatus,
-          connectedAt: DateTime.now()));
-      // TODO: execute scripts
+      _parseOutLine(outLine, oldDevices, newDevices, rerunTimeout);
     });
+
+    for (final device in oldDevices) {
+      device.status = DeviceStatus.disconnected;
+      newDevices.add(device);
+    }
+
+    devices = newDevices;
 
     status = AdbStatus.idle;
     currentTask = null;
+
+    notifyListeners();
+  }
+
+  void clearDisconnected() {
+    devices.removeWhere((device) => device.status == DeviceStatus.disconnected);
 
     notifyListeners();
   }
