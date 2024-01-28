@@ -12,7 +12,11 @@ class SettingsScreen extends StatelessWidget {
       builder: (context, settingsModel, child) {
         final settings = settingsModel.getSettings();
 
-        return SettingsList(settings: settings);
+        return settingsModel.loading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : SettingsList(settings: settings);
       },
     );
   }
