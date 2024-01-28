@@ -1,3 +1,4 @@
+import 'package:adb_manager/common/models/scripts_model.dart';
 import 'package:adb_manager/common/models/settings_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -34,7 +35,8 @@ class AdbManagerScaffold extends StatelessWidget {
       body: MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => AdbModel()),
-          ChangeNotifierProvider(create: (context) => SettingsModel())
+          ChangeNotifierProvider(create: (context) => SettingsModel()),
+          ChangeNotifierProvider(create: (context) => ScriptsModel())
         ],
         child: MainRow(
           state: state,
