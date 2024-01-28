@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:adb_manager/common/exceptions/adb_exceptions.dart';
+import 'package:adb_manager/common/models/scripts_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:process_run/process_run.dart';
 
@@ -8,10 +9,20 @@ enum AdbStatus { idle, runningTask, loading, errorred }
 
 enum DeviceStatus { noPermissions, connected, unknown, disconnected }
 
+class ScriptLog {
+  final Script script;
+  final String log;
+
+  ScriptLog({required this.script, required this.log});
+}
+
 class Device {
   final String serialNumber;
   DateTime connectedAt;
   DeviceStatus status;
+  String? model;
+
+  List<ScriptLog> scriptLog = List.empty(growable: true);
 
   Device(
       {required this.serialNumber,
@@ -24,10 +35,6 @@ class AdbModel extends ChangeNotifier {
   String? currentTask;
 
   List<Device> devices = List.empty(growable: true);
-
-  AdbModel() {
-    getDevices(0);
-  }
 
   void runTask(String label, String task) {
     if (status != AdbStatus.idle) {
