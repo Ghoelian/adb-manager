@@ -32,6 +32,8 @@ jobs:
       - run: flutter build linux --release
 
       - run: "cd ./build/linux/x64/release/"
+      - run: "pwd"
+      - run: "ls -la"
       - run: mv bundle adb-manager
       - run: "tar -czf ./linux-x64.tar.gz ./adb-manager"
       - run: "cd ../../../.."
