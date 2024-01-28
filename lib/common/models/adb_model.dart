@@ -6,6 +6,8 @@ import 'package:process_run/process_run.dart';
 
 enum AdbStatus { idle, runningTask, loading, errorred }
 
+enum DeviceStatus { noPermissions, connected, unknown }
+
 class Device {
   final String serialNumber;
   DateTime connectedAt;
