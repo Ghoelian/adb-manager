@@ -34,11 +34,15 @@ jobs:
       - run: |
           pwd
           ls -la
-          "cd ./build/linux/x64/release/"
-          pwd
+          cd ./build
           ls -la
+          cd ./linux
+          ls -la
+          cd x64
+          ls -la
+          cd release
           mv bundle adb-manager
-          "tar -czf ./linux-x64.tar.gz ./adb-manager"
+          tar -czf ./linux-x64.tar.gz ./adb-manager
 
       - uses: ncipollo/release-action@v1
         with:
