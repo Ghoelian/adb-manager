@@ -1,4 +1,6 @@
-# adb_manager
+# ADB manager
+![windows build](https://github.com/Ghoelian/adb-manager/actions/workflows/windows.yml/badge.svg)
+![linux build](https://github.com/Ghoelian/adb-manager/actions/workflows/linux.yml/badge.svg)
 
 ### Todo
 - [x] get and parse adb devices
