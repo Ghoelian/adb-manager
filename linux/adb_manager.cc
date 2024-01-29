@@ -35,6 +35,8 @@ static void adb_manager_activate(GApplication* application) {
     if (g_strcmp0(wm_name, "GNOME Shell") != 0) {
       use_header_bar = FALSE;
     }
+  } else {
+    use_header_bar = FALSE;
   }
 #endif
   if (use_header_bar) {
