@@ -32,6 +32,8 @@ jobs:
       - run: flutter build linux --release
 
       - run: |
+          pwd
+          ls -la
           "cd ./build/linux/x64/release/"
           pwd
           ls -la
