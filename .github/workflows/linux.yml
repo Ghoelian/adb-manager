@@ -38,7 +38,9 @@ jobs:
         run: flutter build -v linux --release
 
       - name: Package files
-        run: tar -czf ./linux-x86_64.tar.gz ./bundle/*
+        run: |
+          mv bundle adb-manager
+          tar -czf ./linux-x86_64.tar.gz ./adb-manager
         working-directory: build/linux/x64/release
 
       - name: Upload artifacts to release
