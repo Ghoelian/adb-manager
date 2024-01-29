@@ -34,9 +34,7 @@ jobs:
           dir
           cd windows
           dir
-          cd x64
-          dir
-          cd x64
+          cd runner
           dir
           cd Release
           dir
