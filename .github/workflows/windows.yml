@@ -36,6 +36,6 @@ jobs:
           dir
           cd x64
           dir
-          cd release
+          cd x64
           dir
           mv bundle adb-manager
