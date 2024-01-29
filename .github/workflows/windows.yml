@@ -29,6 +29,13 @@ jobs:
       - run: flutter build -v windows --release
 
       - run: |
-          cd ./build/windows/x64/release
-          ls -la
+          dir
+          cd build
+          dir
+          cd windows
+          dir
+          cd x64
+          dir
+          cd release
+          dir
           mv bundle adb-manager
