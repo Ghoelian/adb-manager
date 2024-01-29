@@ -36,7 +36,7 @@ jobs:
       - name: Package files
         run: |
           move-item -Path Release -Destination adb-manager
-          compress-archive -Path Release -DestinationPath windows-x86_64.zip
+          compress-archive -Path adb-manager -DestinationPath windows-x86_64.zip
         working-directory: build\windows\x64\runner
 
       - name: Upload artifacts to release
