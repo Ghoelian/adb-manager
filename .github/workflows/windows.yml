@@ -45,4 +45,12 @@ jobs:
       - name: Upload artifacts to release
         uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
+          artifactErrorsFailBuild: true
           artifacts: ./build/windows/x64/runner/windows-x86_64.zip
+          artifactContentType: application/zip
+          generateReleaseNotes: true
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
