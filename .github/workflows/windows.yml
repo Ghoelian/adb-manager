@@ -18,25 +18,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Flutter action
+      - name: Set up flutter
         uses: subosito/flutter-action@v2.12.0
         with:
-          channel: 'stable'
+          channel: stable
           cache: true
       - run: flutter doctor -v
 
-      - run: flutter pub get
-      - run: flutter build -v windows --release
+      - name: Get flutter dependencies
+        run: flutter pub get
 
-      - run: |
-          dir
-          cd build
-          dir
-          cd windows
-          dir
-          cd x64
-          dir
-          cd runner
-          dir
-          cd Release
-          dir
+      - name: Build
+        run: flutter build -v windows --release
+
+      - name: Copy VC redistributables to release directory
+        run: |
+          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\msvcp140.dll') .
+          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140.dll') .
+          Copy-Item (vswhere -latest -find 'VC\Redist\MSVC\*\x64\*\vcruntime140_1.dll') .
+        working-directory: build\windows\x64\runner\Release
+
+      - name: Package files
+        run: compress-archive -Path * -DestinationPath windows-x86_64.zip
+        working-directory: build\windows\x64\runner
+
+      - name: Upload artifacts to release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./build/windows/x64/runner/windows-x86_64.zip

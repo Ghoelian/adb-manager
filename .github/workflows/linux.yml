@@ -31,14 +31,17 @@ jobs:
 
       - run: flutter doctor -v
 
-      - run: flutter pub get
-      - run: flutter build -v linux --release
+      - name: Get flutter dependencies
+        run: flutter pub get
 
-      - run: |
-          cd ./build/linux/x64/release
-          mv bundle adb-manager
-          tar -czf ./linux-x64.tar.gz ./adb-manager
+      - name: Build
+        run: flutter build -v linux --release
 
-      - uses: ncipollo/release-action@v1
+      - name: Package files
+        run: tar -czf ./linux-x86_64.tar.gz ./adb-manager/*
+        working-directory: build/linux/x64/release
+
+      - name: Upload artifacts to release
+        uses: ncipollo/release-action@v1
         with:
-          artifacts: "./build/linux/x64/release/linux-x64.tar.gz"
+          artifacts: "./build/linux/x64/release/linux-x86_64.tar.gz"
