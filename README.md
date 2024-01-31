@@ -1,3 +1,5 @@
+Moved to [Codebert](https://codeberg.org/Ghoelian/adb-manager)
+
 # ADB manager
 ![windows build](https://github.com/Ghoelian/adb-manager/actions/workflows/windows.yml/badge.svg)
 ![linux build](https://github.com/Ghoelian/adb-manager/actions/workflows/linux.yml/badge.svg)
